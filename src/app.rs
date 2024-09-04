@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub enum CurrentScreen {
     Main,
     Editing,
@@ -12,7 +14,7 @@ pub enum CurrentlyEditing {
 pub struct App {
     pub key_input: String,
     pub value_input: String,
-    pub pairs: Hashmap<String, String>,
+    pub pairs: HashMap<String, String>,
     pub current_screen: CurrentScreen,
     pub currently_editing: Option<CurrentlyEditing>
 }
@@ -24,7 +26,7 @@ impl App {
         App {
             key_input: String::new(),
             value_input: String::new(),
-            pairs: Hashmap::new(),
+            pairs: HashMap::new(),
             current_screen: CurrentScreen::Main,
             currently_editing: None,
         }
@@ -56,7 +58,8 @@ impl App {
     pub fn print_json(&self) -> serde_json::Result<()> {
         let output = serde_json::to_string(&self.pairs)?;
 
+        print!("aaaa");
         println!("{}", output);
-        Ok(());
+        Ok(())
     }
 }
