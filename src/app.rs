@@ -12,6 +12,8 @@ pub enum CurrentlyEditing {
 }
 
 pub struct App {
+    pub config: App_config,
+    pub input_text: String,
     pub key_input: String,
     pub value_input: String,
     pub pairs: HashMap<String, String>,
@@ -19,11 +21,24 @@ pub struct App {
     pub currently_editing: Option<CurrentlyEditing>
 }
 
-impl App {
+pub struct App_config {
+    pub data_directory: String,
+}
 
+impl App_config {
+    pub fn new(args: &[String]) -> App_config {
+        App_config {
+            data_directory: args[1].to_string(),
+        }
+    }
+}
+
+impl App {
     /// Constructor function
-    pub fn new() -> App {
+    pub fn new(args: &[String]) -> App {
         App {
+            config: App_config::new(args),
+            input_text: String::new(),
             key_input: String::new(),
             value_input: String::new(),
             pairs: HashMap::new(),

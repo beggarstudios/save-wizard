@@ -1,0 +1,113 @@
+{
+	   "Cricket" : {
+	        "name" : "Cricket",
+		"description" : "A common cricket.",
+		"health" : 14,
+		"maxhealth" : 14,
+		"attack_power" : 7,
+		"defence": 10,
+		"speed": 8,
+		"agility": 12,
+		"vitality": "6",
+		"dodge_percentage": 25,
+		"level": 3,
+		"moves": ["Tackle", "Spit", "Chirp", "Keen sense"],
+		"abilities": ["Jump"]
+	},
+	
+		"Pill bug" : {
+	        "name" : "Pill bug",
+			"description" : "A common pill bug.",
+			"health" : 16,
+			"maxhealth" : 16,
+			"attack_power" : 8,
+			"defence": 13,
+			"speed": 6,
+			"agility": 5,
+			"vitality": "10",
+			"dodge_percentage": 10,
+			"level": 3,
+			"moves": ["Tackle", "Roll", "Curl up", "Bash"],
+			"abilities": ["Negate"]
+	    },
+	
+		"Carpenter ant" : {
+	        "name" : "Carpenter ant",
+			"description" : "A common Carpenter ant.",
+			"health" : 15,
+			"maxhealth" : 15,
+			"attack_power" : 10,
+			"defence": 11,
+			"speed": 7,
+			"agility": 8,
+			"vitality": "7",
+			"dodge_percentage": 10,
+			"level": 3,
+			"moves": ["Bite", "Gore", "Enrage", "Spit"],
+			"abilities": ["Counter"]
+	    },
+	
+		"Blister beetle" : {
+	        "name" : "Blister beetle",
+			"description" : "A common Blister beetle.",
+			"health" : 11,
+			"maxhealth" : 11,
+			"attack_power" : 6,
+			"defence": 8,
+			"speed": 6,
+			"agility": 8,
+			"vitality": "7",
+			"dodge_percentage": 15,
+			"level": 3,
+			"moves": ["Tackle", "Gore", "Enrage", "Spit"],
+			"abilities": ["Jump"]
+	    },
+	
+		"Horsefly" : {
+	        "name" : "Horsefly",
+			"description" : "A common Horsefly.",
+			"health" : 10,
+			"maxhealth" : 10,
+			"attack_power" : 7,
+			"defence": 7,
+			"speed": 5,
+			"agility": 8,
+			"vitality": "7",
+			"dodge_percentage": 10,
+			"level": 3,
+			"moves": ["Tackle", "Spit", "Enrage", "Keen sense"],
+			"abilities": []
+	    },
+	
+		"Brown scorpion" : {
+	        "name" : "Brown scorpion",
+			"description" : "A Brown scorpion.",
+			"health" : 13,
+			"maxhealth" : 13,
+			"attack_power" : 11,
+			"defence": 10,
+			"speed": 5,
+			"agility": 8,
+			"vitality": "7",
+			"dodge_percentage": 10,
+			"level": 3,
+			"moves": ["Tackle", "Spit", "Enrage", "Keen sense"],
+			"abilities": ["Counter", "Jump"]
+	    },
+	
+		"Rhino beetle" : {
+	        "name" : "Rhino beetle",
+			"description" : "A rhino beetle.",
+			"health" : 24,
+			"maxhealth" : 24,
+			"attack_power" : 12,
+			"defence": 10,
+			"speed": 4,
+			"agility": 10,
+			"vitality": "10",
+			"dodge_percentage": 10,
+			"level": 3,
+			"moves": ["Bite", "Gore", "Enrage", "Spit"],
+			"abilities": ["Counter", "Negate"]
+	    }
+	}
