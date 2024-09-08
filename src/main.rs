@@ -1,5 +1,6 @@
 use std::{env, error::Error, fs, io};
 
+use app::AppInput;
 use ratatui::{
     backend::{Backend, CrosstermBackend},
     crossterm::{
@@ -21,9 +22,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Collect environment arguments
     let args: Vec<String> = env::args().collect();
 
-    //dbg!(args);
-
-
     // Setup terminal
     enable_raw_mode()?;
     let mut stderr = io::stderr();
@@ -35,10 +33,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Create our app and run it
 
     let mut app = App::new(&args);
+    app.initialize_data();
 
     // Refactor to method on App implementation
-    app.input_text = fs::read_to_string(&app.config.data_directory)
-        .expect("Should have been able to read the file");
+    //app.input_text = fs::read_to_string(&app.config.data_directory)
+      //  .expect("Should have been able to read the file");
 
     let res = run_app(&mut terminal, &mut app);
 
@@ -81,6 +80,9 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                     //}
                     KeyCode::Char('q') => {
                         app.current_screen = CurrentScreen::Exiting;
+                    },
+                    KeyCode::Char('p') => {
+                        app.input.next();
                     }
                     _ => {}
                 },

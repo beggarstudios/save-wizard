@@ -1,49 +1,64 @@
-use std::collections::HashMap;
+use std::fs;
+use ratatui::widgets::ListState;
 
 pub enum CurrentScreen {
     Main,
-    Editing,
     Exiting
 }
 
-pub enum CurrentlyEditing {
-    Key,
-    Value
-}
-
-pub struct App {
-    pub config: App_config,
-    pub input_text: String,
-    pub key_input: String,
-    pub value_input: String,
-    pub pairs: HashMap<String, String>,
+pub struct App<'a> {
+    pub config: AppConfig,
+    pub input: AppInput<'a>,
+    pub input_files: Vec<String>,
     pub current_screen: CurrentScreen,
-    pub currently_editing: Option<CurrentlyEditing>
 }
 
-pub struct App_config {
+pub struct AppConfig {
     pub data_directory: String,
 }
 
-impl App_config {
-    pub fn new(args: &[String]) -> App_config {
-        App_config {
+pub struct AppInput<'a> {
+    pub input_list_state: ListState,
+    pub active_list: Option<&'a ListState>,
+}
+
+impl AppConfig {
+    pub fn new(args: &[String]) -> AppConfig {
+        AppConfig {
             data_directory: args[1].to_string(),
         }
     }
 }
 
-impl App {
+impl AppInput<'_> {
+    pub fn new() -> AppInput<'static> {
+        AppInput {
+            input_list_state: ListState::default(),
+            active_list: None,
+        }
+    }
+
+    pub fn next(&mut self) {
+        self.input_list_state.select_next();
+    }
+}
+
+impl App<'_> {
     /// Constructor function
     pub fn new(args: &[String]) -> App {
         App {
-            config: App_config::new(args),
-            input_text: String::new(),
-            key_input: String::new(),
-            value_input: String::new(),
-            pairs: HashMap::new(),
+            config: AppConfig::new(args),
+            input: AppInput::new(),
+            input_files: Vec::new(),
             current_screen: CurrentScreen::Main,
-            currently_editing: None,
+        }
+    }
+
+    pub fn initialize_data(&mut self) {
+        let paths = fs::read_dir(&self.config.data_directory).unwrap();
+
+        for path in paths {
+            self.input_files.push(path.unwrap().path().display().to_string());
         }
     }
 }

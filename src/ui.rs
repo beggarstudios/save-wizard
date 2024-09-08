@@ -1,17 +1,16 @@
-use core::fmt;
-
 use figlet_rs::FIGfont;
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
-    style::{Color, Style},
+    style::{Color, Modifier, Style},
     text::{Line, Span, Text},
-    widgets::{Block, Borders, Clear, List, ListItem, Paragraph, Wrap},
+    widgets::{Block, Borders, Clear, List, ListDirection, Paragraph, Wrap},
     Frame,
 };
 
 use crate::app::{App, CurrentScreen};
 
-pub fn ui(frame: &mut Frame, app: &App) {
+// A mutable reference to the app state bothers me. UI should not update app
+pub fn ui(frame: &mut Frame, app: &mut App) {
     // Create the layout sections.
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -37,26 +36,30 @@ pub fn ui(frame: &mut Frame, app: &App) {
 
     frame.render_widget(title, chunks[0]);
 
-    // Contents
-    let content_block = Block::default()
-        .borders(Borders::ALL)
-        .style(Style::default());
+    let list_items: Vec<String> = app.input_files
+    .iter()
+    .map(|s| {
+        s.split('\\')
+         .last()
+         .unwrap_or("") 
+         .to_string()
+    })
+    .collect();
 
-    let contents = Paragraph::new(Text::styled(
-        &app.input_text,
-        Style::default().fg(Color::Green),
-    ))
-    .block(content_block);
+    let list = List::new(list_items)
+        .block(Block::bordered().title("Input JSON files"))
+        .style(Style::default().fg(Color::LightGreen))
+        .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+        .highlight_symbol(">> ")
+        .repeat_highlight_symbol(true)
+        .direction(ListDirection::BottomToTop);
 
-    frame.render_widget(contents, chunks[1]);
+    frame.render_stateful_widget(list, chunks[1], &mut app.input.input_list_state);
 
     let current_navigation_text = vec![
         // The first half of the text
         match app.current_screen {
             CurrentScreen::Main => Span::styled("Normal Mode", Style::default().fg(Color::Green)),
-            CurrentScreen::Editing => {
-                Span::styled("Editing Mode", Style::default().fg(Color::LightMagenta))
-            }
             CurrentScreen::Exiting => Span::styled("Exiting", Style::default().fg(Color::LightRed)),
         }
         .to_owned(),
@@ -75,10 +78,6 @@ pub fn ui(frame: &mut Frame, app: &App) {
         match app.current_screen {
             CurrentScreen::Main => Span::styled(
                 "(q) to quit",
-                Style::default().fg(Color::Red),
-            ),
-            CurrentScreen::Editing => Span::styled(
-                "(ESC) to cancel/(Tab) to switch boxes/enter to complete",
                 Style::default().fg(Color::Red),
             ),
             CurrentScreen::Exiting => Span::styled(
