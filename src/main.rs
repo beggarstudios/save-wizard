@@ -35,10 +35,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::new(&args);
     app.initialize_data();
 
-    // Refactor to method on App implementation
-    //app.input_text = fs::read_to_string(&app.config.data_directory)
-      //  .expect("Should have been able to read the file");
-
     let res = run_app(&mut terminal, &mut app);
 
     disable_raw_mode()?;

@@ -3,7 +3,7 @@ use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span, Text},
-    widgets::{Block, Borders, Clear, List, ListDirection, Paragraph, Wrap},
+    widgets::{Block, Borders, Clear, HighlightSpacing, List, ListDirection, Paragraph, Wrap},
     Frame,
 };
 
@@ -36,7 +36,7 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
 
     frame.render_widget(title, chunks[0]);
 
-    let list_items: Vec<String> = app.input_files
+    let mut list_items: Vec<String> = app.input_files
     .iter()
     .map(|s| {
         s.split('\\')
@@ -46,13 +46,16 @@ pub fn ui(frame: &mut Frame, app: &mut App) {
     })
     .collect();
 
+    list_items.reverse();
+
     let list = List::new(list_items)
         .block(Block::bordered().title("Input JSON files"))
         .style(Style::default().fg(Color::LightGreen))
         .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
         .highlight_symbol(">> ")
         .repeat_highlight_symbol(true)
-        .direction(ListDirection::BottomToTop);
+        .highlight_spacing(HighlightSpacing::Always)
+        .direction(ListDirection::TopToBottom);
 
     frame.render_stateful_widget(list, chunks[1], &mut app.input.input_list_state);
 
