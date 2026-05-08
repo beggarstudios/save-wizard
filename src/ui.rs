@@ -1,3 +1,4 @@
+use color_eyre::owo_colors::colors::xterm::GrandisCaramel;
 use figlet_rs::FIGfont;
 use ratatui::{
     layout::{Constraint, Direction, Layout},
@@ -7,9 +8,9 @@ use ratatui::{
     Frame,
 };
 
-use crate::app::App;
+use crate::app::{App, Panel};
 
-pub fn ui(frame: &mut Frame, _app: &App) {
+pub fn ui(frame: &mut Frame, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
@@ -20,7 +21,7 @@ pub fn ui(frame: &mut Frame, _app: &App) {
         .split(frame.area());
 
     render_title(frame, chunks[0]);
-    render_body(frame, chunks[1]);
+    render_body(frame, chunks[1], app);
     render_footer(frame, chunks[2]);
 }
 
@@ -40,14 +41,72 @@ fn render_title(frame: &mut Frame, area: ratatui::layout::Rect) {
     frame.render_widget(title, area);
 }
 
-fn render_body(frame: &mut Frame, area: ratatui::layout::Rect) {
-    let body = Paragraph::new(Text::from(vec![
+fn render_body(frame: &mut Frame, area: ratatui::layout::Rect, app: &App) {
+
+	// Split the body vertically
+	let body_chunks = Layout::default()
+		.direction(Direction::Horizontal)
+		.constraints([
+			Constraint::Percentage(30),
+			Constraint::Percentage(70)
+		])
+		.split(area);
+
+	// Render details panel
+	render_details(frame, body_chunks[1], app);
+	render_list(frame, body_chunks[0], app);
+}
+
+fn render_details(frame: &mut Frame, area: ratatui::layout::Rect, app: &App) {
+	// Calculate and show current panel
+
+	 let border_style = if matches!(app.focus, Panel::Details) {
+        Style::default().fg(Color::Green)
+    } else {
+        Style::default()
+    };
+	
+	 let body = Paragraph::new(Text::from(vec![
         Line::from("Bootstrap application shell"),
-        Line::from(""),
+        Line::from(""),	
         Line::from("The TUI runtime is working."),
-        Line::from("Next step: add app state and the first screen."),
     ]))
-    .block(Block::default().title("Home").borders(Borders::ALL));
+    .block(
+        Block::default()
+            .title("Details")
+            .borders(Borders::ALL)
+            .border_style(border_style),
+    );
+
+    frame.render_widget(body, area);
+}
+
+fn render_list(frame: &mut Frame, area: ratatui::layout::Rect, app: &App) {
+		// Calculate and show current panel
+
+	let border_style = if matches!(app.focus, Panel::List) {
+		Style::default().fg(Color::Green)
+	} else {
+        Style::default()
+    };
+
+	let focused_panel = match app.focus {
+		Panel::List => "List",
+		Panel::Details => "Details",
+	};
+	
+	let body = Paragraph::new(Text::from(vec![
+        Line::from("List view with horizontal split"),
+        Line::from("Focused panel:"),
+        Line::from(""),
+        Line::from(focused_panel),
+    ]))
+    .block(
+		Block::default()
+		.title("List")
+		.borders(Borders::ALL)
+		.border_style(border_style)
+	);
 
     frame.render_widget(body, area);
 }
