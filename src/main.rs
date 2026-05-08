@@ -3,7 +3,7 @@ use std::{error::Error, io};
 use ratatui::{
     backend::{Backend, CrosstermBackend},
     crossterm::{
-        event::{self, Event, KeyCode},
+        event::{self, Event},
         execute,
         terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
     },
@@ -11,6 +11,7 @@ use ratatui::{
 };
 
 mod app;
+mod input;
 mod ui;
 
 use crate::{app::App, ui::ui};
@@ -44,16 +45,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
         terminal.draw(|frame| ui(frame, app))?;
 
         if let Event::Key(key) = event::read()? {
-            if key.kind == event::KeyEventKind::Release {
-                continue;
-            }
-
-            match key.code {
-                KeyCode::Char('q') | KeyCode::Esc => {
-                    app.quit();
-                }
-                _ => {}
-            }
+            input::handle_key_event(app, key);
         }
 
         if app.should_quit {

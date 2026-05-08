@@ -7,9 +7,9 @@ use ratatui::{
     Frame,
 };
 
-use crate::app::App;
+use crate::app::{App, Panel};
 
-pub fn ui(frame: &mut Frame, _app: &App) {
+pub fn ui(frame: &mut Frame, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
@@ -20,7 +20,7 @@ pub fn ui(frame: &mut Frame, _app: &App) {
         .split(frame.area());
 
     render_title(frame, chunks[0]);
-    render_body(frame, chunks[1]);
+    render_body(frame, chunks[1], app);
     render_footer(frame, chunks[2]);
 }
 
@@ -40,12 +40,21 @@ fn render_title(frame: &mut Frame, area: ratatui::layout::Rect) {
     frame.render_widget(title, area);
 }
 
-fn render_body(frame: &mut Frame, area: ratatui::layout::Rect) {
+fn render_body(frame: &mut Frame, area: ratatui::layout::Rect, app: &App) {
+	// Calculate and show current panel
+
+	let focused_panel = match app.focus {
+		Panel::Main => "Main",
+		Panel::List => "List",
+	};
+
     let body = Paragraph::new(Text::from(vec![
         Line::from("Bootstrap application shell"),
-        Line::from(""),
+        Line::from(""),	
         Line::from("The TUI runtime is working."),
         Line::from("Next step: add app state and the first screen."),
+        Line::from(""),
+        Line::from(focused_panel),
     ]))
     .block(Block::default().title("Home").borders(Borders::ALL));
 
