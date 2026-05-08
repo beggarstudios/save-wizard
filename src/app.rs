@@ -7,8 +7,8 @@ pub enum AppMode {
 }
 
 pub enum Panel {
-    Main,
     List,
+    Details,
 }
 
 pub struct App {
@@ -26,7 +26,7 @@ impl App {
             should_quit: false,
             current_screen: Screen::Home,
             app_mode: AppMode::Normal,
-            focus: Panel::Main,
+            focus: Panel::List,
             selected_index: 0,
             status_message: String::new(),
         }
@@ -38,8 +38,8 @@ impl App {
 
     pub fn focus_next(&mut self) {
         self.focus = match self.focus {
-            Panel::Main => Panel::List,
-            Panel::List => Panel::Main,
+            Panel::List => Panel::Details,
+            Panel::Details => Panel::List,
         };
     }
 }
