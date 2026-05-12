@@ -9,16 +9,16 @@ pub fn handle_key_event(app: &mut App, key: KeyEvent) {
 
     match key.code {
         KeyCode::Char('q') | KeyCode::Esc => {
-            app.quit();
+            app.go_back();
         }
         KeyCode::Tab => {
             app.focus_next();
         }
         _ => match app.focus {
-            Panel::List => match key.code {
+            Panel::Menu => match key.code {
                 KeyCode::Up => app.list_previous(),
                 KeyCode::Down => app.list_next(),
-				KeyCode::Enter => app.activate_screen(),
+                KeyCode::Enter => app.activate_screen(),
                 _ => {}
             },
             Panel::Details => {}

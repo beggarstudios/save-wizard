@@ -12,9 +12,10 @@ use ratatui::{
 
 mod app;
 mod input;
+mod screens;
 mod ui;
 
-use crate::{app::App, ui::ui};
+use crate::{app::{App, AppMode}, ui::ui};
 
 fn main() -> Result<(), Box<dyn Error>> {
     enable_raw_mode()?;
@@ -48,7 +49,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
             input::handle_key_event(app, key);
         }
 
-        if app.should_quit {
+        if app.app_mode == AppMode::Quitting {
             return Ok(());
         }
     }

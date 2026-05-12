@@ -1,16 +1,18 @@
 pub enum Screen {
     Home,
-	Manifests,
-	EntityTypes,
-	Saves
+    Manifests,
+    EntityTypes,
+    Saves,
 }
 
+#[derive(PartialEq)]
 pub enum AppMode {
     Normal,
+	Quitting
 }
 
 pub enum Panel {
-    List,
+    Menu,
     Details,
 }
 
@@ -21,9 +23,8 @@ pub enum MenuItem {
 }
 
 pub struct App {
-    pub should_quit: bool,
-    pub current_screen: Screen,
     pub app_mode: AppMode,
+    pub current_screen: Screen,
     pub focus: Panel,
     pub status_message: String,
 
@@ -35,29 +36,35 @@ pub struct App {
 impl App {
     pub fn new() -> Self {
         Self {
-            should_quit: false,
             current_screen: Screen::Home,
             app_mode: AppMode::Normal,
-            focus: Panel::List,
+            focus: Panel::Menu,
             selected_menu_index: 0,
             status_message: String::new(),
-            menu_items: vec![
-                MenuItem::Manifests,
-                MenuItem::EntityTypes,
-                MenuItem::Saves,
-            ],
+            menu_items: vec![MenuItem::Manifests, MenuItem::EntityTypes, MenuItem::Saves],
         }
     }
 
     pub fn quit(&mut self) {
-        self.should_quit = true;
+        self.set_status("Quitting app");
+
+        self.app_mode = AppMode::Quitting;
+    }
+
+    pub fn go_back(&mut self) {
+        match self.current_screen {
+            Screen::Home => self.quit(),
+            _ => self.current_screen = Screen::Home,
+        }
     }
 
     pub fn focus_next(&mut self) {
         self.focus = match self.focus {
-            Panel::List => Panel::Details,
-            Panel::Details => Panel::List,
+            Panel::Menu => Panel::Details,
+            Panel::Details => Panel::Menu,
         };
+
+        self.set_status(format!("Focusing on {}", self.focus.label()));
     }
 
     pub fn list_next(&mut self) {
@@ -65,6 +72,15 @@ impl App {
             return;
         }
         self.selected_menu_index = (self.selected_menu_index + 1) % self.menu_items.len();
+
+        let Some(selection_option) = self.menu_items.get(self.selected_menu_index) else {
+            return;
+        };
+
+        self.set_status(format!(
+            "Changed selected menu option to {}",
+            selection_option.label()
+        ));
     }
 
     pub fn list_previous(&mut self) {
@@ -77,23 +93,44 @@ impl App {
         }
 
         self.selected_menu_index -= 1;
+
+        let Some(selection_option) = self.menu_items.get(self.selected_menu_index) else {
+            return;
+        };
+
+        self.set_status(format!(
+            "Changed selected menu option to {}",
+            selection_option.label()
+        ));
     }
 
-	pub fn activate_screen(&mut self) {
+    pub fn set_status(&mut self, message: impl Into<String>) {
+        self.status_message = message.into();
+    }
 
-		let Some(selected_item) =
-			self.menu_items.get(self.selected_menu_index)
-		else {
-			return;
-		};
-		let queued_screen = match selected_item {
-			MenuItem::Manifests => Screen::Manifests,
-			MenuItem::EntityTypes => Screen::EntityTypes,
-			MenuItem::Saves => Screen::Saves,
-		};
+    pub fn activate_screen(&mut self) {
+        let Some(selected_item) = self.menu_items.get(self.selected_menu_index) else {
+            return;
+        };
+        let queued_screen = match selected_item {
+            MenuItem::Manifests => Screen::Manifests,
+            MenuItem::EntityTypes => Screen::EntityTypes,
+            MenuItem::Saves => Screen::Saves,
+        };
 
-		self.current_screen = queued_screen;
-	}
+        self.set_status(format!("Activating {} screen", queued_screen.label()));
+
+        self.current_screen = queued_screen;
+    }
+}
+
+impl Panel {
+    pub fn label(&self) -> &'static str {
+        match self {
+            Panel::Menu => "Menu",
+            Panel::Details => "Details",
+        }
+    }
 }
 
 impl MenuItem {
@@ -105,7 +142,7 @@ impl MenuItem {
         }
     }
 
-	 pub fn heading(&self) -> &'static str {
+    pub fn heading(&self) -> &'static str {
         match self {
             MenuItem::Manifests => "Game manifests",
             MenuItem::EntityTypes => "Game entity types",
@@ -113,25 +150,31 @@ impl MenuItem {
         }
     }
 
-	 pub fn description(&self) -> &'static str {
+    pub fn description(&self) -> &'static str {
         match self {
-            MenuItem::Manifests => r#"Import and manage manifests from your game.
+            MenuItem::Manifests => {
+                r#"Import and manage manifests from your game.
 
-Manifests define your game's available data structures that Save Wizard can read data from in order to build save structures."#,
+Manifests define your game's available data structures that Save Wizard can read data from in order to build save structures."#
+            }
 
-            MenuItem::EntityTypes => r#"Manage entity types from your manifests.
+            MenuItem::EntityTypes => {
+                r#"Manage entity types from your manifests.
 
-Entity types are definitions of content from your game's manifests. These define the content that can appear in generated save files such as inventories, items or enemies."#,
+Entity types are definitions of content from your game's manifests. These define the content that can appear in generated save files such as inventories, items or enemies."#
+            }
 
-            MenuItem::Saves => r#"Manage save files.
+            MenuItem::Saves => {
+                r#"Manage save files.
 
-Save files can be built from your defined entities and saved and exported from this section"#,
+Save files can be built from your defined entities and saved and exported from this section"#
+            }
         }
     }
 }
 
 impl Screen {
-	 pub fn label(&self) -> &'static str {
+    pub fn label(&self) -> &'static str {
         match self {
             Screen::Home => "Home",
             Screen::Manifests => "Manifests",
